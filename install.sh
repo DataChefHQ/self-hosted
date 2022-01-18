@@ -14,7 +14,7 @@ source parse-cli.sh
 source dc-detect-version.sh
 source error-handling.sh
 source check-latest-commit.sh
-source check-minimum-requirements.sh
+# source check-minimum-requirements.sh
 
 # Let's go! Start impacting things.
 source turn-things-off.sh

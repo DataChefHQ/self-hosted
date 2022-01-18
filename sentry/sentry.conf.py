@@ -3,6 +3,9 @@
 
 from sentry.conf.server import *  # NOQA
 
+import os
+env = os.environ.get
+
 
 # Generously adapted from pynetlinux: https://git.io/JJmga
 def get_internal_network():
@@ -36,11 +39,11 @@ INTERNAL_SYSTEM_IPS = (get_internal_network(),)
 DATABASES = {
     "default": {
         "ENGINE": "sentry.db.postgres",
-        "NAME": "postgres",
-        "USER": "postgres",
-        "PASSWORD": "",
-        "HOST": "postgres",
-        "PORT": "",
+        "NAME": env("POSTGRES_DB"),
+        "USER": env("POSTGRES_USER"),
+        "PASSWORD": env("POSTGRES_PASSWORD"),
+        "HOST": env("POSTGRES_HOST"),
+        "PORT": int(env("POSTGRES_PORT"))
     }
 }
 
