@@ -1,2 +1,2 @@
 # Add plugins here
-boto3==1.21.4
+boto3
