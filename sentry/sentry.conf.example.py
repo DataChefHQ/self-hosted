@@ -1,5 +1,6 @@
 # This file is just Python, with a touch of Django which means
 # you can inherit and tweak settings to your hearts content.
+import json
 
 from sentry.conf.server import *  # NOQA
 import boto3
@@ -19,7 +20,10 @@ def get_internal_network():
 
     try:
         ip = struct.unpack(
-            b"!I", struct.unpack(b"16sH2x4s8x", fcntl.ioctl(sockfd, 0x8915, ifreq))[2]
+            b"!I",
+            struct.unpack(b"16sH2x4s8x", fcntl.ioctl(sockfd, 0x8915, ifreq))[
+                2
+            ],
         )[0]
         netmask = socket.ntohl(
             struct.unpack(b"16sH2xI8x", fcntl.ioctl(sockfd, 0x891B, ifreq))[2]
@@ -27,7 +31,9 @@ def get_internal_network():
     except IOError:
         return ()
     base = socket.inet_ntoa(struct.pack(b"!I", ip & netmask))
-    netmask_bits = 32 - int(round(math.log(ctypes.c_uint32(~netmask).value + 1, 2), 1))
+    netmask_bits = 32 - int(
+        round(math.log(ctypes.c_uint32(~netmask).value + 1, 2), 1)
+    )
     return "{0:s}/{1:d}".format(base, netmask_bits)
 
 
@@ -40,7 +46,9 @@ def get_db_secret_from_secrets_manager(secret_name, region_name="eu-west-1"):
         service_name="secretsmanager",
         region_name=region_name,
     )
-    return client.get_secret_value(SecretId=secret_name)
+    response = client.get_secret_value(SecretId=secret_name)
+    secret_json = json.loads(response["SecretString"])
+    return secret_json
 
 
 db_secret = get_db_secret_from_secrets_manager(env("AWS_RDS_SECRET_NAME"))
@@ -84,7 +92,9 @@ SENTRY_OPTIONS["system.event-retention-days"] = int(
 
 SENTRY_OPTIONS["redis.clusters"] = {
     "default": {
-        "hosts": {0: {"host": "redis", "password": "", "port": "6379", "db": "0"}}
+        "hosts": {
+            0: {"host": "redis", "password": "", "port": "6379", "db": "0"}
+        }
     }
 }
 
@@ -244,7 +254,7 @@ SENTRY_WEB_OPTIONS = {
 # Mail #
 ########
 
-SENTRY_OPTIONS["mail.list-namespace"] = env('SENTRY_MAIL_HOST', 'localhost')
+SENTRY_OPTIONS["mail.list-namespace"] = env("SENTRY_MAIL_HOST", "localhost")
 SENTRY_OPTIONS["mail.from"] = f"sentry@{SENTRY_OPTIONS['mail.list-namespace']}"
 
 ############
@@ -283,7 +293,7 @@ SENTRY_FEATURES.update(
 # MaxMind Integration #
 #######################
 
-GEOIP_PATH_MMDB = '/geoip/GeoLite2-City.mmdb'
+GEOIP_PATH_MMDB = "/geoip/GeoLite2-City.mmdb"
 
 #########################
 # Bitbucket Integration #
