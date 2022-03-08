@@ -5,6 +5,10 @@ import json
 from sentry.conf.server import *  # NOQA
 import boto3
 
+import os
+
+env = os.environ.get
+
 
 # Generously adapted from pynetlinux: https://git.io/JJmga
 def get_internal_network():

@@ -1,2 +1,2 @@
 # Add plugins here
-boto3
+boto3 # TDOO ADD version
