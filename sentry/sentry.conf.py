@@ -9,6 +9,15 @@ import os
 
 env = os.environ.get
 
+def get_secret_from_secrets_manager(secret_name, region_name="eu-west-1"):
+    session = boto3.session.Session()
+    client = session.client(
+        service_name="secretsmanager",
+        region_name=region_name,
+    )
+    response = client.get_secret_value(SecretId=secret_name)
+    secret_json = json.loads(response["SecretString"])
+    return secret_json
 
 # Generously adapted from pynetlinux: https://git.io/JJmga
 def get_internal_network():
@@ -43,19 +52,7 @@ def get_internal_network():
 
 INTERNAL_SYSTEM_IPS = (get_internal_network(),)
 
-
-def get_db_secret_from_secrets_manager(secret_name, region_name="eu-west-1"):
-    session = boto3.session.Session()
-    client = session.client(
-        service_name="secretsmanager",
-        region_name=region_name,
-    )
-    response = client.get_secret_value(SecretId=secret_name)
-    secret_json = json.loads(response["SecretString"])
-    return secret_json
-
-
-db_secret = get_db_secret_from_secrets_manager(env("AWS_RDS_SECRET_NAME"))
+db_secret = get_secret_from_secrets_manager(env("AWS_RDS_SECRET_NAME"))
 
 DATABASES = {
     "default": {
@@ -257,9 +254,13 @@ SENTRY_WEB_OPTIONS = {
 ########
 # Mail #
 ########
+ses_secret = get_secret_from_secrets_manager(env("AWS_SES_SECRET_NAME"))
 
 SENTRY_OPTIONS["mail.list-namespace"] = env("SENTRY_MAIL_HOST", "localhost")
-SENTRY_OPTIONS["mail.from"] = f"sentry@{SENTRY_OPTIONS['mail.list-namespace']}"
+SENTRY_OPTIONS["mail.host"] = env("AWS_SMTP_HOST")
+SENTRY_OPTIONS["mail.username"] = ses_secret["username"]
+SENTRY_OPTIONS["mail.password"] = ses_secret["password"]
+SENTRY_OPTIONS["mail.from"] = env("AWS_SES_VERIFIED_EMAIL")
 
 ############
 # Features #

@@ -7,8 +7,13 @@
 # Mail Server #
 ###############
 
-# mail.backend: 'smtp'  # Use dummy if you want to disable email entirely
-mail.host: 'smtp'
+mail.backend: 'smtp'  # Use dummy if you want to disable email entirely
+
+# NOTE: The following configs are configured in sentry.conf.py from 
+#      the values in secrets manager to use AWS SES as smtp host
+
+
+# mail.host: 'smtp'
 # mail.port: 25
 # mail.username: ''
 # mail.password: ''
