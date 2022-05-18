@@ -5,10 +5,6 @@ import json
 from sentry.conf.server import *  # NOQA
 import boto3
 
-import os
-
-env = os.environ.get
-
 def get_secret_from_secrets_manager(secret_name, region_name="eu-west-1"):
     session = boto3.session.Session()
     client = session.client(
