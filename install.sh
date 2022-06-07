@@ -13,7 +13,7 @@ source "$(dirname $0)/install/_lib.sh"  # does a `cd .../install/`, among other 
 source parse-cli.sh
 source dc-detect-version.sh
 source error-handling.sh
-source check-latest-commit.sh
+# source check-latest-commit.sh
 # source check-minimum-requirements.sh
 
 # Let's go! Start impacting things.
